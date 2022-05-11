@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 	"sync"
+	"sync/atomic"
 )
 
 func main() {
@@ -11,13 +12,11 @@ func main() {
 
 	wg.Add(100)
 
-	counter := 0
+	var counter int64 = 0
 	for i := 0; i < 100; i++ {
 		go func() {
 			runtime.Gosched()
-			v := counter
-			v++
-			counter = v
+			atomic.AddInt64(&counter, 1)
 			wg.Done()
 		}()
 	}
